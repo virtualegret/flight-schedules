@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <head>
-  <title>Electron Auto Update Example</title>
+  <title>Flight Schedules Manager</title>
+  <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' 'unsafe-inline';" />
   <style>
     body {
       box-sizing: border-box;
@@ -26,8 +28,9 @@
   </style>
 </head>
 <body>
-  <h1>Electron Auto Update Example</h1>
-  <p id="version"></p>
+  <h1>Main Menu</h1>
+
+  <button onClick="window.location.href = 'pages/airports.html'">Airports Management</button>
   <div id="notification" class="hidden">
     <p id="message"></p>
     <button id="close-button" onClick="closeNotification()">
@@ -44,11 +47,6 @@
     const message = document.getElementById('message');
     const restartButton = document.getElementById('restart-button');
     
-    ipcRenderer.send('app_version');
-    ipcRenderer.on('app_version', (event, arg) => {
-      ipcRenderer.removeAllListeners('app_version');
-      version.innerText = 'Version ' + arg.version;
-    });
 
     ipcRenderer.on('update_available', () => {
       ipcRenderer.removeAllListeners('update_available');

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<head>
+  <title>Airports Manager</title>
+  <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' 'unsafe-inline';" />
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background-color: #eaeaea;
+      text-align: center;
+    }
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 200px;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Airports Manager</h1>
+  <button onClick="menu()">Menu</button>
+  <button onClick="importCSV()">Import</button>
+  <button onClick="exportCSV()">Export</button>
+  <hr />
+  <table id="airportsInformation">
+    <tr>
+      <th>ICAO</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+    
+  </table>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    const {dialog} = require('electron').remote;
+
+    ipcRenderer.on('readAirportImport', (event, data) => {
+        data = data.data;
+        window.sessionStorage.setItem("airports", JSON.stringify(data));
+
+        for(i in data){
+            if(i != 0 && data[i].length > 1){
+                document.getElementById("airportsInformation").innerHTML += `
+    <tr>
+      <td>${data[i][0]}</td>
+      <td>${data[i][2].replace(/"/g, "").replace(/<p>/g, "").replace(/<\/p>/g, "")}</td>
+      <td><button onClick="edit()">Edit</button></td>
+    </tr>
+                `
+            }
+        }
+    });
+
+    ipcRenderer.on('exportAirport', (event, data) => {
+      if(data.error == true){
+        alert("An error occured!")
+      }else{
+        alert("Exported!")
+      }
+    });
+    
+
+
+    function exportCSV() {
+        var oRows = document.getElementById('airportsInformation').getElementsByTagName('tr');
+        var iRowCount = oRows.length;
+        if(iRowCount == 1){
+            alert("There is nothing to export!")
+            return;
+        }
+        let information = window.sessionStorage.getItem("airports");
+        ipcRenderer.send('exportAirport', information)
+    }
+
+    function alert(message) {
+      const options = {
+        type: 'info',
+        buttons: ['OK'],
+        defaultId: 0,
+        title: 'Alert',
+        message: message == undefined ? 'Oops! This is not supposed to be sent! Please report this bug!' : message
+      };
+
+      dialog.showMessageBox(null, options, (response, checkboxChecked) => {
+      });
+    }
+
+    function confirm(message) {
+      const options = {
+        type: 'info',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        title: 'Alert',
+        message: message == undefined ? 'Oops! This is not supposed to be sent! Please report this bug!' : message
+      };
+      let msg = dialog.showMessageBox(null, options)
+      return msg
+    }
+
+    async function menu() {
+      let confirmed = false;
+
+      if(document.getElementById("airportsInformation").rows.length > 1){
+          let temp = await confirm("Are you sure you want to continue without saving?")
+          confirmed = temp == 0 ? true : false;
+      }else{
+          confirmed = true;
+      }
+
+      if(confirmed == false)return;
+      window.location.href = '../index.html'
+    }
+
+    async function importCSV() {
+
+        let confirmed = false;
+        
+        if(document.getElementById("airportsInformation").rows.length > 1){
+            let temp = await confirm("Are you sure you want to continue without saving?")
+            confirmed = temp == 0 ? true : false;
+        }else{
+            confirmed = true;
+        }
+
+        if(confirmed == false)return
+
+        document.getElementById("airportsInformation").innerHTML = `
+    <tr>
+      <th>ICAO</th>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+        `
+        dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [
+                { name: 'phpVMS Airports Export CSV', extensions: ['csv'] }
+            ]
+        }, function (files) {
+            if (files !== undefined) {
+                // handle files
+                ipcRenderer.send('readAirportImport', files)
+            }
+        });
+    }
+
+    
+
+  </script>
+</body>
