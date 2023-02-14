@@ -1,9 +1,15 @@
-const { app, BrowserWindow, ipcMain, protocol, webContents } = require('electron');
+const { app, dialog,BrowserWindow, ipcMain, protocol, webContents } = require('electron');
 const { autoUpdater } = require('electron-updater');
+const airportInfo = require("airport-info")
+const prompt = require('electron-prompt');
 var fs = require('fs');
 var path = require('path');
 const isDev = require('electron-is-dev');
+const axios = require('axios');
 
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+// https://api.aviowiki.com/free/airports/search?query=KLAX
 
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
@@ -82,9 +88,49 @@ autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall();
 });
 
+ipcMain.on('getAirportInfo', async (event, icao) => {
+  var config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://api.aviowiki.com/free/airports/search?query=' + icao,
+    headers: { }
+  };
+  
+  let data = await axios(config)
+  let stop = false;
+  if(data.data.content[0].icao == null){
+    event.returnValue = 404
+    stop = true;
+    
+  }
+  
+  if(stop == false)event.returnValue = data.data.content[0]
+}); 
+
+ipcMain.on('editAirportDialog', async (event, rowNum, name, value, require, defaults) => {
+  let data = await prompt({
+      title: 'Edit Airport',
+      label: 'Enter the value for \'' + name + '\'',
+      value: value,
+      type: 'input'
+    })
+
+    let done = false;
+    if(require == true && data == ""){
+      event.returnValue = { data: defaults, rowNum: rowNum };
+      done = true
+    }
+    if(data == undefined)data = "";
+  if(done == false){
+    event.returnValue = { data: data, rowNum: rowNum };
+  }
+});
+
 ipcMain.on('readAirportImport', (event, file) => {
   var data = fs.readFileSync(path.join(file[0]), 'utf8');
   data = data.split("\n")
+  console.log(data)
+  
   for(i in data){
     data[i] = data[i].split(",")
   }
@@ -93,10 +139,12 @@ ipcMain.on('readAirportImport', (event, file) => {
 
 ipcMain.on('exportAirport', (event, file) => {
   file = JSON.parse(file);
+  console.log(file)
   for(i in file){
     file[i] = file[i].join(",")
   }
   file = file.join("\n")
+
   fs.writeFile(path.join(downloadPath, "./exportedAirport.csv"), file, 'utf8', function (err) {
     if (err) {
       event.sender.send('exportAirport', { error: true });
