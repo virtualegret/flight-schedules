@@ -9,6 +9,9 @@ const axios = require('axios');
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
+// 501 = cancelled signal
+// 404 = not found
+
 // https://api.aviowiki.com/free/airports/search?query=KLAX
 
 protocol.registerSchemesAsPrivileged([{
@@ -116,7 +119,12 @@ ipcMain.on('editAirportDialog', async (event, rowNum, name, value, require, defa
     })
 
     let done = false;
-    if(require == true && data == ""){
+    
+    if(done == false && data == null){
+      event.returnValue = { data: 501, rowNum: rowNum };
+      done = true
+    }
+    if(done == false && require == true && data == ""){
       event.returnValue = { data: defaults, rowNum: rowNum };
       done = true
     }
@@ -129,7 +137,6 @@ ipcMain.on('editAirportDialog', async (event, rowNum, name, value, require, defa
 ipcMain.on('readAirportImport', (event, file) => {
   var data = fs.readFileSync(path.join(file[0]), 'utf8');
   data = data.split("\n")
-  console.log(data)
   
   for(i in data){
     data[i] = data[i].split(",")
@@ -139,7 +146,6 @@ ipcMain.on('readAirportImport', (event, file) => {
 
 ipcMain.on('exportAirport', (event, file) => {
   file = JSON.parse(file);
-  console.log(file)
   for(i in file){
     file[i] = file[i].join(",")
   }
