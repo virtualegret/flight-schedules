@@ -138,7 +138,7 @@
       temp.push(groundHandlingCost.data);
 
       let f100llCost = ipcRenderer.sendSync('editAirportDialog', row, "100llFuelCost", "", false)
-      temp.push(groundHandlingCost.data);
+      temp.push(f100llCost.data);
 
       let jetACost = ipcRenderer.sendSync('editAirportDialog', row, "jetAFuelCost", "", false)
       temp.push(jetACost.data);
