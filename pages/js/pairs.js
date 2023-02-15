@@ -10,6 +10,14 @@ window.onload = function() {
   load(JSON.parse(window.localStorage.getItem("pairs")));
 }
 
+ipcRenderer.on("exportFlights", (event, data) => {
+  if(data.error == true){
+    alert("An error occured!")
+  }else{
+    alert("Exported!")
+  }
+})
+
 ipcRenderer.on("readPairImport", (event, data) => {
   data = data.data;
   window.localStorage.setItem("flights", JSON.stringify(data));
@@ -62,6 +70,17 @@ ipcRenderer.on("readPairImport", (event, data) => {
     });
   }
 
+  function exportFlights(){
+    var oRows = document.getElementById('pairsInformation').getElementsByTagName('tr');
+    var iRowCount = oRows.length;
+    if(iRowCount == 1){
+        alert("There is nothing to export!")
+        return;
+    }
+    let information = window.localStorage.getItem("flights");
+    ipcRenderer.send('exportFlights', information)
+  }
+
   function clearPairs(){
     let warn = confirm("Are you sure you want to clear all pairs? This cannot be undone!");
     if(warn == 1)return;
@@ -86,7 +105,7 @@ ipcRenderer.on("readPairImport", (event, data) => {
     let warn = confirm("Are you sure you want to add this pair? Added pairs cannot be individually deleted!");
     if(warn == 1)return;
     let data = JSON.parse(window.localStorage.getItem("pairs"));
-    data.push([dep.toUpperCase(), arr.toUpperCase()]);
+    data.push([dep.toUpperCase(), arr.toUpperCase(), []]);
     window.localStorage.setItem("pairs", JSON.stringify(data));
     load(data);
   }
@@ -133,6 +152,7 @@ ipcRenderer.on("readPairImport", (event, data) => {
   <tr>
     <th>Depature ICAO</th>
     <th>Arrival ICAO</th>
+    <th># of Included Flights</th>
     <th>Actions</th>
   </tr>
       `
@@ -143,6 +163,7 @@ ipcRenderer.on("readPairImport", (event, data) => {
   <tr>
     <td>${data[i][0]}</td>
     <td>${data[i][1]}</td>
+    <td>${data[i][2].length.toString()}</td>
     <td><button onClick="editPair(${i})">Edit Pair</button></td>
   </tr>
               `

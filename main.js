@@ -174,6 +174,22 @@ ipcMain.on('exportAirport', (event, file) => {
   });
 });
 
+ipcMain.on('exportFlights', (event, file) => {
+  file = JSON.parse(file);
+  for(i in file){
+    file[i] = file[i].join(",")
+  }
+  file = file.join("\n")
+
+  fs.writeFile(path.join(downloadPath, "./exportedFlights.csv"), file, 'utf8', function (err) {
+    if (err) {
+      event.sender.send('exportFlights', { error: true });
+    } else{
+      event.sender.send('exportFlights', { error: false });
+    }
+  });
+});
+
 
 ipcMain.on('editPairs', async (event, rowNum, name, value, require, defaults) => {
   let data = await prompt({

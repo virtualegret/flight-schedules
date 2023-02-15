@@ -10,6 +10,11 @@ Below are a list of supported VAM softwares
 
 Other VAMs are not yet planned, but will be considered after phpVMS v7 has been finished.
 
+## Features That are Not Planned
+
+- Subfleet support in flights/pairs
+- ACARS functionality
+
 ## System Requirements
 
 - Windows 10 or above
