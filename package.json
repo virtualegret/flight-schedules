@@ -16,8 +16,8 @@
   "author": "virtualEgret",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^5.0.1",
-    "electron-builder": "^23.6.0"
+    "electron": "^23.0.0",
+    "electron-builder": "^22.10.3"
   },
   "dependencies": {
     "airport-info": "^1.0.4",
