@@ -8,6 +8,7 @@ const isDev = require('electron-is-dev');
 const axios = require('axios');
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
 // 501 = cancelled signal
 // 404 = not found
@@ -41,6 +42,7 @@ function createWindow () {
   if(isDev){
     mainWindow.setSize(1000, 800);
     mainWindow.loadFile('index.html');
+    mainWindow.center();
   }else{
     mainWindow.loadFile('updateCheck.html');
   }
@@ -85,6 +87,7 @@ ipcMain.on('app_version', (event) => {
 autoUpdater.on('update-not-available', () => {
   mainWindow.setSize(1000, 800);
   mainWindow.loadFile('index.html');
+  mainWindow.center();
 });
 
 autoUpdater.on('update-downloaded', () => {
@@ -145,6 +148,16 @@ ipcMain.on('readAirportImport', (event, file) => {
   event.sender.send('readAirportImport', { data: data });
 });
 
+ipcMain.on('readPairImport', (event, file) => {
+  var data = fs.readFileSync(path.join(file[0]), 'utf8');
+  data = data.split("\n")
+  
+  for(i in data){
+    data[i] = data[i].split(",")
+  }
+  event.sender.send('readPairImport', { data: data });
+});
+
 ipcMain.on('exportAirport', (event, file) => {
   file = JSON.parse(file);
   for(i in file){
@@ -157,6 +170,22 @@ ipcMain.on('exportAirport', (event, file) => {
       event.sender.send('exportAirport', { error: true });
     } else{
       event.sender.send('exportAirport', { error: false });
+    }
+  });
+});
+
+ipcMain.on('exportFlights', (event, file) => {
+  file = JSON.parse(file);
+  for(i in file){
+    file[i] = file[i].join(",")
+  }
+  file = file.join("\n")
+
+  fs.writeFile(path.join(downloadPath, "./exportedFlights.csv"), file, 'utf8', function (err) {
+    if (err) {
+      event.sender.send('exportFlights', { error: true });
+    } else{
+      event.sender.send('exportFlights', { error: false });
     }
   });
 });
