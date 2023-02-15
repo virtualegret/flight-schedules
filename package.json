@@ -17,7 +17,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^23.0.0",
-    "electron-builder": "^22.10.3"
+    "electron-builder": "^22.14.13"
   },
   "dependencies": {
     "airport-info": "^1.0.4",
