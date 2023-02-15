@@ -41,19 +41,7 @@
       Restart
     </button>
   </div>
-  <script>
-    const { ipcRenderer } = require('electron');
-    
-    window.onload = function(){
-      if(window.localStorage.getItem("airports") == null){
-        window.localStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
-      }
-      if(window.localStorage.getItem("flights") == null){
-        window.localStorage.setItem("flights", JSON.stringify(['airline,flight_number,route_code,callsign,route_leg,dpt_airport,arr_airport,alt_airport,days,dpt_time,arr_time,level,distance,flight_time,flight_type,load_factor,load_factor_variance,pilot_pay,route,notes,start_date,end_date,active,subfleets,fares,fields'.split(",")]));
-      }
-      if(window.localStorage.getItem("pairs") == null){
-        window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao'.split(",")]));
-      }
-    }
-  </script>
 </body>
+
+
+<script src="pages/js/default.js"></script>

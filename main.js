@@ -41,6 +41,7 @@ function createWindow () {
   if(isDev){
     mainWindow.setSize(1000, 800);
     mainWindow.loadFile('index.html');
+    mainWindow.center();
   }else{
     mainWindow.loadFile('updateCheck.html');
   }
@@ -85,6 +86,7 @@ ipcMain.on('app_version', (event) => {
 autoUpdater.on('update-not-available', () => {
   mainWindow.setSize(1000, 800);
   mainWindow.loadFile('index.html');
+  mainWindow.center();
 });
 
 autoUpdater.on('update-downloaded', () => {
