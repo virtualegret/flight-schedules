@@ -1,14 +1,14 @@
 const { ipcRenderer } = require('electron');
 const {dialog} = require('electron').remote;
 
-window.onload = function() {
+$(function() {
   let data = JSON.parse(window.localStorage.getItem("airports"));
   if(data.length <= 1){
     alert("Please add an airport first!");
     window.location.href = "airports.html";
   }
   load(JSON.parse(window.localStorage.getItem("pairs")));
-}
+})
 
 ipcRenderer.on("exportFlights", (event, data) => {
   if(data.error == true){

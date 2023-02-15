@@ -2,12 +2,12 @@
 const { ipcRenderer } = require('electron');
 const {dialog} = require('electron').remote;
 
-window.onload = function() {
+$(function() {
   let data = JSON.parse(window.localStorage.getItem("airports"));
   if(data.length > 1){
     load(data)
   }
-}
+})
 
 ipcRenderer.on('readAirportImport', (event, data) => {
     data = data.data;

@@ -1,13 +1,13 @@
 const { ipcRenderer } = require('electron');
 const {dialog} = require('electron').remote;
 
-window.onload = function() {
+$(function() {
   let data = JSON.parse(window.localStorage.getItem("editPair"));
   if(data.length <= 1){
     window.location.href = "./pairs.html";
   }
   load(JSON.parse(window.localStorage.getItem("editPair")));
-}
+})
 
 
 function back(){
