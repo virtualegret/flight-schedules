@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+  <title>Pairs Manager</title>
+  <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' 'unsafe-inline';" />
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background-color: #eaeaea;
+      text-align: center;
+    }
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 200px;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pairs Manager</h1>
+  <button onClick="menu()">Menu</button>
+  <button onClick="createPair()">Create New Pair</button>
+  <hr />
+  <table id="pairsInformation">
+    <tr>
+      <th>Depature ICAO</th>
+      <th>Arrival ICAO</th>
+      <th>Actions</th>
+    </tr>
+    
+  </table>
+
+</body>
+
+<script src="js/pairs.js"></script>

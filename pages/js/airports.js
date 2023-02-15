@@ -4,7 +4,7 @@ const {dialog} = require('electron').remote;
 
 ipcRenderer.on('readAirportImport', (event, data) => {
     data = data.data;
-    window.sessionStorage.setItem("airports", JSON.stringify(data));
+    window.localStorage.setItem("airports", JSON.stringify(data));
 
     load(data)
 });
@@ -40,10 +40,22 @@ ipcRenderer.on('exportAirport', (event, data) => {
 });
 
 function deleteAirport(row){
-  let data = JSON.parse(window.sessionStorage.getItem("airports"))
+  let data = JSON.parse(window.localStorage.getItem("airports"))
   data.splice(row, 1)
-  window.sessionStorage.setItem("airports", JSON.stringify(data))
-  load(JSON.parse(window.sessionStorage.getItem("airports")))
+  window.localStorage.setItem("airports", JSON.stringify(data))
+  load(JSON.parse(window.localStorage.getItem("airports")))
+}
+
+function airportExist(icao){
+    let data = JSON.parse(window.localStorage.getItem("airports"));
+    let res = false
+    for(i in data){
+        if(data[i][0].toString().toLowerCase() == icao.toString().toLowerCase()){
+            res = true;
+            break;
+        }
+    }
+    return res;
 }
 
 async function clearAirports(){
@@ -60,20 +72,21 @@ async function clearAirports(){
 
     if(confirmed == false)return;
     console.log("test")
-    window.sessionStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
-    load(JSON.parse(window.sessionStorage.getItem("airports")))
+    window.localStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
+    load(JSON.parse(window.localStorage.getItem("airports")))
 }
 
 function add(){
-  let table = JSON.parse(window.sessionStorage.getItem("airports"));
+  let table = JSON.parse(window.localStorage.getItem("airports"));
   
   let row = 0;
   let result = ipcRenderer.sendSync('editAirportDialog', row, "ICAO", "", true, "")
   if(result.data == 501)return;
   let airport = ipcRenderer.sendSync('getAirportInfo', result.data)
-  if(airport == 404)return alert("Airport not found!")	
+  if(airport == 404)return alert("Airport not found!");	
+  if(airportExist(airport["icao"]))return alert("Airport already exists!")
   let temp = []
-  let data = JSON.parse(window.sessionStorage.getItem("airports"))
+  let data = JSON.parse(window.localStorage.getItem("airports"))
   temp.push(airport["icao"]);
 
   temp.push(airport["iata"]);
@@ -115,23 +128,26 @@ function add(){
   if(notes.data == 501)return;
   temp.push(notes.data);
 
-
+  if(data[data.length - 1].length <= 1){
+    data.pop();
+  }
   data.push(temp);
-  window.sessionStorage.setItem("airports", JSON.stringify(data))
-  load(JSON.parse(window.sessionStorage.getItem("airports")))
+  data.push([""])
+  window.localStorage.setItem("airports", JSON.stringify(data))
+  load(JSON.parse(window.localStorage.getItem("airports")))
   alert("Done!")
   // table[row][collumn] = document.getElementById("airportsInformation").rows[row].cells[collumn].innerHTML;
 }
 
 function editAirport(row, collumn){
-  let table = JSON.parse(window.sessionStorage.getItem("airports"));
+  let table = JSON.parse(window.localStorage.getItem("airports"));
 
   let result = ipcRenderer.sendSync('editAirportDialog', row, "ICAO", table[row][0], true, table[row][0])
   if(result.data == 501)return;
   let airport = ipcRenderer.sendSync('getAirportInfo', result.data)
   if(airport == 404)return alert("Airport not found!")	
   let rowNum = result.rowNum
-  let data = JSON.parse(window.sessionStorage.getItem("airports"))
+  let data = JSON.parse(window.localStorage.getItem("airports"))
   data[rowNum][0] = airport["icao"];
   
   data[rowNum][1] = airport["iata"];
@@ -175,8 +191,8 @@ function editAirport(row, collumn){
 
   
 
-  window.sessionStorage.setItem("airports", JSON.stringify(data))
-  load(JSON.parse(window.sessionStorage.getItem("airports")))
+  window.localStorage.setItem("airports", JSON.stringify(data))
+  load(JSON.parse(window.localStorage.getItem("airports")))
   alert("Done!")
   // table[row][collumn] = document.getElementById("airportsInformation").rows[row].cells[collumn].innerHTML;
 
@@ -196,7 +212,7 @@ function exportCSV() {
         alert("There is nothing to export!")
         return;
     }
-    let information = window.sessionStorage.getItem("airports");
+    let information = window.localStorage.getItem("airports");
     ipcRenderer.send('exportAirport', information)
 }
 
@@ -226,11 +242,16 @@ function confirm(message) {
 }
 
 window.onload = function() {
-  if(window.sessionStorage.getItem("airports") == null){
-    window.sessionStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
+  if(window.localStorage.getItem("airports") == null){
+    window.localStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
   }
-
-  let data = JSON.parse(window.sessionStorage.getItem("airports"));
+  if(window.localStorage.getItem("flights") == null){
+    window.localStorage.setItem("flights", JSON.stringify(['airline,flight_number,route_code,callsign,route_leg,dpt_airport,arr_airport,alt_airport,days,dpt_time,arr_time,level,distance,flight_time,flight_type,load_factor,load_factor_variance,pilot_pay,route,notes,start_date,end_date,active,subfleets,fares,fields'.split(",")]));
+  }
+  if(window.localStorage.getItem("pairs") == null){
+    window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao'.split(",")]));
+  }
+  let data = JSON.parse(window.localStorage.getItem("airports"));
   if(data.length > 1){
     load(data)
   }

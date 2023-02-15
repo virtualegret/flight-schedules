@@ -160,3 +160,29 @@ ipcMain.on('exportAirport', (event, file) => {
     }
   });
 });
+
+
+ipcMain.on('editPairs', async (event, rowNum, name, value, require, defaults) => {
+  let data = await prompt({
+      title: 'Edit Pairs',
+      label: 'Enter the value for \'' + name + '\'',
+      value: value,
+      type: 'input',
+      icon: __dirname + '/buildResources/icon.png',
+    })
+
+    let done = false;
+    
+    if(done == false && data == null){
+      event.returnValue = { data: 501, rowNum: rowNum };
+      done = true
+    }
+    if(done == false && require == true && data == ""){
+      event.returnValue = { data: defaults, rowNum: rowNum };
+      done = true
+    }
+    if(data == undefined)data = "";
+  if(done == false){
+    event.returnValue = { data: data, rowNum: rowNum };
+  }
+});
