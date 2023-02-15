@@ -1,4 +1,7 @@
-window.onload = function() {
+let $ = jQuery = require('jquery');
+
+
+$(function() {
     console.log("DOING ANYTHING HERE WILL PROBABLY BREAK THE APPLICATION!")
     window.localStorage.setItem("NOTICE", "EDITS MADE TO ANY OF THE FOLLOWING FIELDS WILL BREAK THE APPLICATION!");
     if(window.localStorage.getItem("airports") == null){
@@ -10,7 +13,7 @@ window.onload = function() {
     if(window.localStorage.getItem("pairs") == null){
       window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao,flights'.split(",")]));
     }
-}
+})
 
 
 function alert(message) {
