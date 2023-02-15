@@ -1,6 +1,6 @@
 {
   "name": "flight-schedules",
-  "version": "2.2.1-beta",
+  "version": "2.2.2-beta",
   "description": "Easy way to populate your virtual airlines with informations!",
   "main": "main.js",
   "repository": {
@@ -13,8 +13,8 @@
     "build": "electron-builder build --win --publish never",
     "deploy": "electron-builder build --win --publish always"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "virtualEgret",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^5.0.1",
     "electron-builder": "^20.40.2"
