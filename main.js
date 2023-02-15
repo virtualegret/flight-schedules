@@ -8,6 +8,7 @@ const isDev = require('electron-is-dev');
 const axios = require('axios');
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
 // 501 = cancelled signal
 // 404 = not found
@@ -145,6 +146,16 @@ ipcMain.on('readAirportImport', (event, file) => {
     data[i] = data[i].split(",")
   }
   event.sender.send('readAirportImport', { data: data });
+});
+
+ipcMain.on('readPairImport', (event, file) => {
+  var data = fs.readFileSync(path.join(file[0]), 'utf8');
+  data = data.split("\n")
+  
+  for(i in data){
+    data[i] = data[i].split(",")
+  }
+  event.sender.send('readPairImport', { data: data });
 });
 
 ipcMain.on('exportAirport', (event, file) => {

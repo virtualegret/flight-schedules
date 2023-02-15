@@ -8,7 +8,7 @@ window.onload = function() {
       window.localStorage.setItem("flights", JSON.stringify(['airline,flight_number,route_code,callsign,route_leg,dpt_airport,arr_airport,alt_airport,days,dpt_time,arr_time,level,distance,flight_time,flight_type,load_factor,load_factor_variance,pilot_pay,route,notes,start_date,end_date,active,subfleets,fares,fields'.split(",")]));
     }
     if(window.localStorage.getItem("pairs") == null){
-      window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao'.split(",")]));
+      window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao,flights'.split(",")]));
     }
 }
 
@@ -37,4 +37,20 @@ function alert(message) {
     let msg = dialog.showMessageBox(null, options)
     return msg
   }
+
+  
+  async function menu() {
+    // let confirmed = false;
+  
+    // if(document.getElementById("airportsInformation").rows.length > 1){
+    //     let temp = await confirm("Are you sure you want to continue without saving?")
+    //     confirmed = temp == 0 ? true : false;
+    // }else{
+    //     confirmed = true;
+    // }
+  
+    // if(confirmed == false)return;
+    window.location.href = '../index.html'
+  }
+
   
