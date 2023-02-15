@@ -101,7 +101,7 @@ ipcMain.on('getAirportInfo', async (event, icao) => {
   
   let data = await axios(config)
   let stop = false;
-  if(data.data.content[0].icao == null){
+  if(data.data.content[0] == undefined || data.data.content[0].icao == null){
     event.returnValue = 404
     stop = true;
     
@@ -115,7 +115,8 @@ ipcMain.on('editAirportDialog', async (event, rowNum, name, value, require, defa
       title: 'Edit Airport',
       label: 'Enter the value for \'' + name + '\'',
       value: value,
-      type: 'input'
+      type: 'input',
+      icon: __dirname + '/buildResources/icon.png',
     })
 
     let done = false;

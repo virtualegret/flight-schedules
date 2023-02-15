@@ -46,6 +46,24 @@ function deleteAirport(row){
   load(JSON.parse(window.sessionStorage.getItem("airports")))
 }
 
+async function clearAirports(){
+    console.log("test")
+
+    let confirmed = false;
+    
+    if(document.getElementById("airportsInformation").rows.length > 1){
+        let temp = await confirm("Are you sure you want to continue without saving?")
+        confirmed = temp == 0 ? true : false;
+    }else{
+        confirmed = true;
+    }
+
+    if(confirmed == false)return;
+    console.log("test")
+    window.sessionStorage.setItem("airports", JSON.stringify(['icao,iata,name,location,country,timezone,hub,lat,lon,ground_handling_cost,fuel_100ll_cost,fuel_jeta_cost,fuel_mogas_cost,notes'.split(",")]));
+    load(JSON.parse(window.sessionStorage.getItem("airports")))
+}
+
 function add(){
   let table = JSON.parse(window.sessionStorage.getItem("airports"));
   
