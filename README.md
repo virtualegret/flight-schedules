@@ -51,8 +51,12 @@ Installation is easy. Download the installer from the releases tab and launch it
     - Import
       - Import a phpVMS flight plan
       - Automatically converts into pairs system
+    - Export
+      - Export all flights to a csv that phpVMS flight page accepts
     - Create New Pair
       - Creates a new pair from a user given departure to a user given arrival
+    - Clear
+      - Removes all pairs and flights from the application
   - Flight Page
     - List of all flights that starts in the pair departure, and ends in pair arrival
 
