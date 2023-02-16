@@ -1,4 +1,4 @@
-# Flight Schedules Manager(FSM)
+# Flight Schedule Manager(FSM)
 
 FSM is developed and maintained by the virtual airlines, virtualEgret, and virtual egret is an open source software that others virtual airlines could use to help with their own virtual airlines operations.
 
