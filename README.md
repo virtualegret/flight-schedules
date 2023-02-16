@@ -21,6 +21,10 @@ Other VAMs are not yet planned, but will be considered after phpVMS v7 has been 
 - 500mb of RAM
 - Needs Network Connection for Functions of Many Features
 
+## Other Requirements
+
+- flightplandatabase.com API key - [Documentation](https://bit.ly/fdbapi)
+
 ## Installation
 
 Installation is easy. Download the installer from the releases tab and launch it(no admin rights needed), and the software will be installed
