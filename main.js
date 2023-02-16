@@ -6,6 +6,10 @@ var fs = require('fs');
 var path = require('path');
 const isDev = require('electron-is-dev');
 const axios = require('axios');
+const os = require('os');
+const storage = require('electron-json-storage');
+
+storage.setDataPath(os.tmpdir());
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
@@ -41,6 +45,7 @@ function createWindow () {
       enableRemoteModule: true
     },
   });
+
   if(isDev){
     mainWindow.setSize(1000, 800);
     mainWindow.loadFile('index.html');
@@ -75,7 +80,6 @@ app.on('ready', () => {
 
 ipcMain.on('dialog', async (event, method, params) => {       
   let data = await dialog[method](params);
-  console.log(data)
   event.returnValue = data;
 });
 
@@ -105,6 +109,66 @@ autoUpdater.on('update-not-available', () => {
 autoUpdater.on('update-downloaded', () => {
   autoUpdater.quitAndInstall();
 });
+
+ipcMain.on('getSettings', (event) => {
+  if(fs.existsSync(path.join(app.getPath("appData"), './FSM/settings.json'))){
+    let good;
+    try{
+      JSON.parse(fs.readFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), 'utf8').toString('utf8'))
+      good = true
+    }catch{
+      good = false
+    }
+    if(good == false){
+      fs.writeFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), JSON.stringify({}, null, 2))
+      event.returnValue = JSON.stringify({});
+    }else{
+      event.returnValue = fs.readFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), 'utf8').toString('utf8');
+    }
+  }else{
+    event.returnValue = JSON.stringify({});
+  }
+})
+
+ipcMain.on("clearSetup", async (event) => {
+  event.returnValue = fs.unlinkSync(path.join(app.getPath("appData"), "./FSM/settings.json"))
+})
+
+
+ipcMain.on('dialogCreate', async (event, title, label, value, type) => {
+  let data = await prompt({
+      title: title,
+      label: label,
+      type: type,
+      value: value,
+      alwaysOnTop: true,
+      icon: __dirname + '/buildResources/icon.png',
+    })
+    let res;
+    if(data == null){
+      res = 501;
+    }
+    if(data == ""){
+      res = 404;
+    }
+    if(res != 501 && res != 404)res = data;
+    event.returnValue = res;
+});
+
+ipcMain.on('saveSettings', (event, field, value) => {
+  if(!fs.existsSync(path.join(app.getPath("appData"), './FSM/settings.json'))){
+    fs.writeFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), JSON.stringify({}, null, 2));
+  }
+  let data = fs.readFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), 'utf8').toString('utf8');
+  data = JSON.parse(data);
+
+  data[field] = value;
+  
+
+  event.returnValue = fs.writeFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), JSON.stringify(data, null, 2));
+})
+
+
 
 ipcMain.on('getAirportInfo', async (event, icao) => {
   var config = {

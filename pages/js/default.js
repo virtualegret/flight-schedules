@@ -2,7 +2,7 @@ const { ipcRenderer, dialog } = require('electron');
 let $ = jQuery = require('jquery');
 
 
-$(function() {
+$(async function() {
     console.log("DOING ANYTHING HERE WILL PROBABLY BREAK THE APPLICATION!")
     window.localStorage.setItem("NOTICE", "EDITS MADE TO ANY OF THE FOLLOWING FIELDS WILL BREAK THE APPLICATION!");
     if(window.localStorage.getItem("airports") == null){
@@ -14,7 +14,47 @@ $(function() {
     if(window.localStorage.getItem("pairs") == null){
       window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao,flights'.split(",")]));
     }
+
+    let data = await ipcRenderer.sendSync('getSettings');
+    
+    runSetup();
+
+
+    
+    
+
+
 })
+
+async function runSetup(){
+  let settings = JSON.parse(await ipcRenderer.sendSync('getSettings'));
+  
+  if(settings['fpdAPI'] == undefined){
+    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", "Can be created in flightplandatabase.com account settings", 'input')
+    
+    if(res == 501 || res == 404)return runSetup();
+    await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
+  }
+}
+
+async function clearSettings(){
+  await ipcRenderer.sendSync("clearSetup")
+  runSetup()
+}
+
+async function editSettings(){
+  let settings = JSON.parse(await ipcRenderer.sendSync('getSettings'));
+  
+  if(settings['fpdAPI'] == undefined){
+    return alert("Please run the setup first!")
+  }else{
+    
+    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", settings['fpdAPI'], 'input')
+    
+    if(res == 404)return alert("Please enter a valid key.");
+    await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
+  }
+}
 
 
 function alert(message) {
