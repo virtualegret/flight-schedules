@@ -31,7 +31,8 @@ async function runSetup(){
   let settings = JSON.parse(await ipcRenderer.sendSync('getSettings'));
   
   if(settings['fpdAPI'] == undefined){
-    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", "Can be created in flightplandatabase.com account settings", 'input')
+    alert("Please read 'https://bit.ly/fdbapi' before continuing. It includes guide for the next question.")
+    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", "Documentation: https://github.com/virtualegret/flight-schedules/wiki/Getting-FlightPlanDatabase-API-Key", 'input')
     
     if(res == 501 || res == 404)return runSetup();
     let result = await ipcRenderer.sendSync("RESTreq", "https://api.flightplandatabase.com/me", "get", { 
