@@ -10,7 +10,7 @@ const axios = require('axios');
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
-// 501 = cancelled signal
+// 501 = cancelled signals
 // 404 = not found
 
 // https://api.aviowiki.com/free/airports/search?query=KLAX
