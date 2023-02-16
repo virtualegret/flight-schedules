@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-const {dialog} = require('electron').remote;
 
 $(function() {
   let data = JSON.parse(window.localStorage.getItem("editPair"));

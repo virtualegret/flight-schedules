@@ -1,3 +1,4 @@
+const { ipcRenderer, dialog } = require('electron');
 let $ = jQuery = require('jquery');
 
 
@@ -25,8 +26,7 @@ function alert(message) {
       message: message == undefined ? 'Oops! This is not supposed to be sent! Please report this bug!' : message
     };
   
-    dialog.showMessageBox(null, options, (response, checkboxChecked) => {
-    });
+    ipcRenderer.sendSync('dialog', 'showMessageBox', options)
   }
   
   function confirm(message) {
@@ -37,8 +37,8 @@ function alert(message) {
       title: 'Alert',
       message: message == undefined ? 'Oops! This is not supposed to be sent! Please report this bug!' : message
     };
-    let msg = dialog.showMessageBox(null, options)
-    return msg
+    let msg = ipcRenderer.sendSync('dialog', 'showMessageBox', options)
+    return msg.response
   }
 
   

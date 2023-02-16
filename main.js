@@ -35,8 +35,11 @@ function createWindow () {
     height: 500,
     autoHideMenuBar: true,
     icon: __dirname + '/buildResources/icon.png',
+    
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true
     },
   });
   if(isDev){
@@ -65,6 +68,16 @@ app.on('ready', () => {
   createWindow();
   mainWindow.setResizable(false);
   autoUpdater.checkForUpdatesAndNotify();
+
+  
+  
+});
+
+
+ipcMain.on('dialog', async (event, method, params) => {       
+  let data = await dialog[method](params);
+  console.log(data)
+  event.returnValue = data;
 });
 
 app.on('window-all-closed', function () {

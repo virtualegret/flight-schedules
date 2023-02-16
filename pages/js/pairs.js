@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-const {dialog} = require('electron').remote;
 
 $(function() {
   let data = JSON.parse(window.localStorage.getItem("airports"));
@@ -57,17 +55,16 @@ ipcRenderer.on("readPairImport", (event, data) => {
     }
 
     if(confirmed == false)return
-    dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [
-            { name: 'phpVMS Flights Export CSV', extensions: ['csv'] }
-        ]
-    }, function (files) {
+    let files = ipcRenderer.sendSync("dialog", "showOpenDialog", {
+      properties: ['openFile'],
+      filters: [
+          { name: 'phpVMS Airports Export CSV', extensions: ['csv'] }
+      ]
+  })
         if (files !== undefined) {
             // handle files
-            ipcRenderer.send('readPairImport', files)
+            ipcRenderer.send('readPairImport', files.filePaths)
         }
-    });
   }
 
   function exportFlights(){

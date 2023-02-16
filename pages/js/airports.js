@@ -1,6 +1,4 @@
 
-const { ipcRenderer } = require('electron');
-const {dialog} = require('electron').remote;
 
 $(function() {
   let data = JSON.parse(window.localStorage.getItem("airports"));
@@ -108,7 +106,7 @@ function add(){
 
   let isHub = ipcRenderer.sendSync('editAirportDialog', row, "Hub(1 for yes, 0 for no)", "", true, 0)
   if(isHub.data == 501)return;
-  isHub = isHub.data.toString() == "1" ? "1" : "0";
+  isHub = isHub.data.toString() == "1" ? "1" : "";
   temp.push(isHub);
 
   temp.push(airport["coordinates"]["latitude"]);
@@ -173,7 +171,7 @@ function editAirport(row, collumn){
 
   let isHub = ipcRenderer.sendSync('editAirportDialog', row, "Hub(1 for yes, 0 for no)", table[row][6], true, table[row][6] == undefined ? 0 : table[row][6])
   if(isHub.data == 501)return;
-  isHub = isHub.data.toString() == "1" ? "1" : "0";
+  isHub = isHub.data.toString() == "1" ? "1" : "";
   data[rowNum][6] = isHub;
 
   let groundHandlingCost = ipcRenderer.sendSync('editAirportDialog', row, "GroundHandlingCost", table[row][9], false)
@@ -251,17 +249,17 @@ async function importCSV() {
     }
 
     if(confirmed == false)return
-    dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [
-            { name: 'phpVMS Airports Export CSV', extensions: ['csv'] }
-        ]
-    }, function (files) {
+    
+    let files = ipcRenderer.sendSync("dialog", "showOpenDialog", {
+      properties: ['openFile'],
+      filters: [
+          { name: 'phpVMS Airports Export CSV', extensions: ['csv'] }
+      ]
+  })
         if (files !== undefined) {
             // handle files
-            ipcRenderer.send('readAirportImport', files)
+            ipcRenderer.send('readAirportImport', files.filePaths)
         }
-    });
 }
 
 
