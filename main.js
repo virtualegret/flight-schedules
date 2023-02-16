@@ -6,6 +6,11 @@ var path = require('path');
 const isDev = require('electron-is-dev');
 const axios = require('axios');
 let log = require('electron-log');
+const os = require('os');
+
+const isMac = os.platform() === "darwin";
+const isWindows = os.platform() === "win32";
+const isLinux = os.platform() === "linux";
 
 autoUpdater.allowPrerelease = false;
 
@@ -22,6 +27,9 @@ let mainWindow;
 
 function createWindow () {
   log.info("Starting application...")
+  if (isWindows) {
+    app.setAppUserModelId("FSM");
+  }
   mainWindow = new BrowserWindow({
     // width: 1000,
     // height: 800,
