@@ -7,6 +7,8 @@ const isDev = require('electron-is-dev');
 const axios = require('axios');
 let log = require('electron-log');
 
+autoUpdater.allowPrerelease = false;
+
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
