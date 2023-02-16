@@ -13,6 +13,10 @@ function back(){
     window.location.href = "./pairs.html"
 }
 
+function editFlight(){
+    alert("This feature is not yet available!")
+}
+
 function load(data){
     let flights = JSON.parse(window.localStorage.getItem("flights"));
     document.getElementById("flightsInformation").innerHTML = `

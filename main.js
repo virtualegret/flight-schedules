@@ -35,7 +35,6 @@ function createWindow () {
     height: 500,
     autoHideMenuBar: true,
     icon: __dirname + '/buildResources/icon.png',
-    
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
