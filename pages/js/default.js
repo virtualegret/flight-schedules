@@ -1,5 +1,6 @@
 const { ipcRenderer, dialog } = require('electron');
 let $ = jQuery = require('jquery');
+var axios = require('axios');
 
 
 $(async function() {
@@ -33,6 +34,15 @@ async function runSetup(){
     let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", "Can be created in flightplandatabase.com account settings", 'input')
     
     if(res == 501 || res == 404)return runSetup();
+    let result = await ipcRenderer.sendSync("RESTreq", "https://api.flightplandatabase.com/me", "get", { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + res
+    })
+    if(typeof result == "number"){
+      alert("Invalid Token, please try again!")
+      runSetup()
+      return
+    }
     await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
   }
 }
@@ -51,7 +61,15 @@ async function editSettings(){
     
     let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", settings['fpdAPI'], 'input')
     
-    if(res == 404)return alert("Please enter a valid key.");
+    if(res == 404 || res == 501)return alert("Please enter a valid key.");
+    let result = await ipcRenderer.sendSync("RESTreq", "https://api.flightplandatabase.com/me", "get", { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + res
+    })
+    if(typeof result == "number"){
+      alert("Invalid Token, please try again!")
+      return
+    }
     await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
   }
 }

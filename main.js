@@ -155,6 +155,24 @@ ipcMain.on('dialogCreate', async (event, title, label, value, type) => {
     event.returnValue = res;
 });
 
+ipcMain.on("RESTreq", async (event, url, method, header) => {
+  
+
+  var config = {
+    method: method,
+    url: url,
+    headers: header
+  };
+  try{
+
+    let result = await axios(config);
+    event.returnValue = result.data
+  }catch(e){
+    event.returnValue = e.response.status;
+  }
+  
+})
+
 ipcMain.on('saveSettings', (event, field, value) => {
   if(!fs.existsSync(path.join(app.getPath("appData"), './FSM/settings.json'))){
     fs.writeFileSync(path.join(app.getPath("appData"), './FSM/settings.json'), JSON.stringify({}, null, 2));
