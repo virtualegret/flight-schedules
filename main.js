@@ -45,7 +45,7 @@ function createWindow () {
     },
   });
 
-  if(!isDev){
+  if(isDev){
     log.info("Development Environment Detected, skipping update check...")
     mainWindow.setSize(1000, 800);
     mainWindow.loadFile('index.html');
