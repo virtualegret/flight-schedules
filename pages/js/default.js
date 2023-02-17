@@ -1,8 +1,9 @@
 const { ipcRenderer, dialog } = require('electron');
 let $ = jQuery = require('jquery');
+var axios = require('axios');
 
 
-$(function() {
+$(async function() {
     console.log("DOING ANYTHING HERE WILL PROBABLY BREAK THE APPLICATION!")
     window.localStorage.setItem("NOTICE", "EDITS MADE TO ANY OF THE FOLLOWING FIELDS WILL BREAK THE APPLICATION!");
     if(window.localStorage.getItem("airports") == null){
@@ -14,7 +15,65 @@ $(function() {
     if(window.localStorage.getItem("pairs") == null){
       window.localStorage.setItem("pairs", JSON.stringify(['dep_icao,arr_icao,flights'.split(",")]));
     }
+
+    let data = await ipcRenderer.sendSync('getSettings');
+    
+    runSetup();
+
+
+    
+    
+
+
 })
+
+async function runSetup(){
+  let settings = JSON.parse(await ipcRenderer.sendSync('getSettings'));
+  
+  if(settings['fpdAPI'] == undefined){
+    alert("Please read 'https://bit.ly/fdbapi' before continuing. It includes guide for the next question.")
+    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", "Documentation: https://github.com/virtualegret/flight-schedules/wiki/Getting-FlightPlanDatabase-API-Key", 'input')
+    
+    if(res == 501 || res == 404)return runSetup();
+    let result = await ipcRenderer.sendSync("RESTreq", "https://api.flightplandatabase.com/me", "get", { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + res
+    })
+    if(typeof result == "number"){
+      alert("Invalid Token, please try again!")
+      runSetup()
+      return
+    }
+    await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
+  }
+}
+
+async function clearSettings(){
+  await ipcRenderer.sendSync("clearSetup")
+  runSetup()
+}
+
+async function editSettings(){
+  let settings = JSON.parse(await ipcRenderer.sendSync('getSettings'));
+  
+  if(settings['fpdAPI'] == undefined){
+    return alert("Please run the setup first!")
+  }else{
+    
+    let res = await ipcRenderer.sendSync("dialogCreate", "Setup", "Flight Plan Database API Key", settings['fpdAPI'], 'input')
+    
+    if(res == 404 || res == 501)return alert("Please enter a valid key.");
+    let result = await ipcRenderer.sendSync("RESTreq", "https://api.flightplandatabase.com/me", "get", { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + res
+    })
+    if(typeof result == "number"){
+      alert("Invalid Token, please try again!")
+      return
+    }
+    await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
+  }
+}
 
 
 function alert(message) {
