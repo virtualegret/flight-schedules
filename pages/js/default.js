@@ -1,6 +1,7 @@
 const { ipcRenderer, dialog } = require('electron');
 let $ = jQuery = require('jquery');
 var axios = require('axios');
+const { type } = require('jquery');
 
 
 $(async function() {
@@ -40,10 +41,10 @@ async function runSetup(){
       'Authorization': 'Basic ' + res
     })
     if(typeof result == "number"){
-      alert("Invalid Token, please try again!")
-      runSetup()
-      return
+      alert("An error(" + result + ") occured while trying to get the flight route. Please try again.");
+      return runSetup();
     }
+    
     await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)
   }
 }
@@ -68,7 +69,7 @@ async function editSettings(){
       'Authorization': 'Basic ' + res
     })
     if(typeof result == "number"){
-      alert("Invalid Token, please try again!")
+      alert("An error(" + flightRoute + ") occured while trying to get the flight route. Please try again.");
       return
     }
     await ipcRenderer.sendSync('saveSettings', 'fpdAPI', res)

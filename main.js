@@ -20,6 +20,7 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
 // 501 = cancelled signals
 // 404 = not found
+// 401 = unauthorized
 
 // https://api.aviowiki.com/free/airports/search?query=KLAX
 
@@ -148,6 +149,68 @@ ipcMain.on("clearSetup", async (event) => {
   event.returnValue = fs.unlinkSync(path.join(app.getPath("appData"), "./FSM/settings.json"))
 })
 
+ipcMain.on("findFlightData", async (event, from, to) => {
+  var config = {
+    method: 'get',
+    url: 'https://api.flightplandatabase.com/search/plans?toICAO=' + to + '&fromICAO=' + from,
+  };
+  
+  let planSearch = await axios(config)
+  planSearch = planSearch.data;
+
+  event.returnValue = planSearch;
+  
+})
+
+ipcMain.on("createFlightData", async (event, from, to) => {
+  let settings = require(path.join(app.getPath("appData"), './FSM/settings.json'))
+  console.log(settings)
+  var data = JSON.stringify({
+    "fromICAO": from,
+    "toICAO": to
+  });
+  
+  var config = {
+    method: 'post',
+    url: 'https://api.flightplandatabase.com/auto/generate',
+    headers: { 
+      'Authorization': 'Basic ' + settings["fpdAPI"], 
+      'Content-Type': 'application/json'
+    },
+    data : data
+  };
+  let planSearch
+  try{
+    planSearch = await axios(config)
+  }catch(e){
+    planSearch = {
+      data: e.response.status
+    }
+  }
+  planSearch = planSearch.data;
+
+  event.returnValue = planSearch;
+})
+
+ipcMain.on("findFlightRoute", async (event, id) => {
+  var config = {
+    method: 'get',
+    url: 'https://api.flightplandatabase.com/plan/' + id,
+  };
+  let route
+  try{
+    route = await axios(config)
+  }catch(e){
+    route = {
+      data: e.response.status
+    }
+  }
+  route = route.data;
+
+  event.returnValue = route["route"]["nodes"];
+  
+})
+
 
 ipcMain.on('dialogCreate', async (event, title, label, value, type) => {
   log.info("Prompt Requested: " + title + " with label: " + label + " and value: " + value + " and type: " + type)
@@ -213,7 +276,14 @@ ipcMain.on('getAirportInfo', async (event, icao) => {
     headers: { }
   };
   
-  let data = await axios(config)
+  let data
+  try{
+    data = await axios(config)
+  }catch(e){
+    data = {
+      data: e.response.status
+    }
+  }
   log.info(icao + " response: " + data.data)
   let stop = false;
   if(data.data.content[0] == undefined || data.data.content[0].icao == null){
