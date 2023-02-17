@@ -27,6 +27,7 @@ let mainWindow;
 
 function createWindow () {
   log.info("Starting application...")
+  log.info(`App version: ${app.getVersion()}`)
   if (isWindows) {
     app.setAppUserModelId("FSM");
   }
@@ -44,13 +45,12 @@ function createWindow () {
     },
   });
 
-  if(isDev){
+  if(!isDev){
     log.info("Development Environment Detected, skipping update check...")
     mainWindow.setSize(1000, 800);
     mainWindow.loadFile('index.html');
     mainWindow.center();
   }else{
-    log.info("Production Environment Detected, checking for updates...")
     mainWindow.loadFile('updateCheck.html');
   }
   mainWindow.on('closed', function () {
@@ -66,8 +66,25 @@ app.on('ready', () => {
   log.info("Application Ready, Window no longer resizable.")
   mainWindow.setResizable(false);
   log.info("Starting Update Check...")
-  autoUpdater.checkForUpdatesAndNotify();
+  if(isStableVersion(app.getVersion())){
+    log.info("Production Environment Detected, checking for updates...")
+    autoUpdater.checkForUpdatesAndNotify();
+  }else{
+    log.info("Stable Version Detected, skipping update check...")
+    mainWindow.loadFile('index.html');
+    mainWindow.setSize(1000, 800);
+    mainWindow.center();
+  }
 });
+
+function isStableVersion(version){
+  version = version.toLowerCase();
+
+  if(version.includes("beta") || version.includes("dev")){
+    return false
+  }
+  return true
+}
 
 
 ipcMain.on('dialog', async (event, method, params) => {  
