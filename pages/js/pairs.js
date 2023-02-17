@@ -175,3 +175,4 @@ ipcRenderer.on("readPairImport", (event, data) => {
     window.localStorage.setItem("editPair", JSON.stringify(data[id]));
     window.location.href = './editPairs.html'
   }
+  

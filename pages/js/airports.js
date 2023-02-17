@@ -261,5 +261,3 @@ async function importCSV() {
             ipcRenderer.send('readAirportImport', files.filePaths)
         }
 }
-
-

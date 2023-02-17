@@ -115,5 +115,4 @@ function alert(message) {
     // if(confirmed == false)return;
     window.location.href = '../index.html'
   }
-
   
