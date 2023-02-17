@@ -1,6 +1,6 @@
 {
   "name": "flight-schedules",
-  "version": "0.2.3-hf1",
+  "version": "0.2.4-dev1",
   "description": "Easy way to populate your virtual airlines with information!",
   "main": "main.js",
   "repository": {
