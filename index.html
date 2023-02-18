@@ -30,21 +30,14 @@
 <body>
   <h1>Main Menu</h1>
 
+  <!-- Pages Selection  -->
   <button onClick="window.location.href = 'pages/airports.html'">Airports Management</button>
   <button onClick="window.location.href = 'pages/pairs.html'">Pairs Management</button>
   <hr />
+
+  <!-- Settings  -->
   <button onClick="clearSettings()">Clear Settings</button>
   <button onClick="editSettings()">Edit Settings</button>
-
-  <div id="notification" class="hidden">
-    <p id="message"></p>
-    <button id="close-button" onClick="closeNotification()">
-      Close
-    </button>
-    <button id="restart-button" onClick="restartApp()" class="hidden">
-      Restart
-    </button>
-  </div>
 </body>
 
 

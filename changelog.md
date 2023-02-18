@@ -8,3 +8,4 @@ View each version's changelogs here, including dev and beta versions
 - Added fail safe to REST requests
 - More failsafe will be added soon to other functions and features
 - Added change log to keep track of changes
+- Added comments to everything
