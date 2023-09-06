@@ -16,7 +16,7 @@
   "author": "virtualEgret",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^23.0.0",
+    "electron": "^23.3.13",
     "electron-builder": "^23.6.0"
   },
   "dependencies": {
